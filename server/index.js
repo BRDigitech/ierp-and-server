@@ -950,9 +950,6 @@ ORDER  BY 1 ASC;
 });
 //working
 app.get('/list-of-offers', async (req, res) => {
-    let P_DT2 = "31-JAN-2020";
-    // const formattedDate = new Date(accOpenDate).toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-
     try {
         const quotationDetailsReport = await db.sequelize.query(`
 SELECT
@@ -993,10 +990,11 @@ AND VERIFIED_BY IS NOT NULL
 });
 //working
 app.get('/list-of-contracts', async (req, res) => {
-    let pdt1 = "31-JAN-2000";
-    let p_dt2 = "31-JAN-2040";
-   
-    // const formattedDate = new Date(accOpenDate).toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    // let pdt1 = "31-JAN-2000";
+    // let p_dt2 = "31-JAN-2040";
+    let { pdt1,p_dt2 } = req.query;
+     pdt1 = new Date(pdt1).toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+     p_dt2 = new Date(p_dt2).toISOString().split('T')[0]; // Format date as YYYY-MM-DD
 
     try {
         const quotationDetailsReport = await db.sequelize.query(`
@@ -1035,10 +1033,12 @@ and lease_date between :pdt1 and :p_dt2
 });
 //working
 app.get('/list-of-disbursment', async (req, res) => {
-    let pdt1 = "31-JAN-2000";
-    let p_dt2 = "31-JAN-2040";
-    // const formattedDate = new Date(accOpenDate).toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-    try {
+    // let pdt1 = "31-JAN-2000";
+    // let p_dt2 = "31-JAN-2040";
+    let { pdt1,p_dt2 } = req.query;
+    pdt1 = new Date(pdt1).toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    p_dt2 = new Date(p_dt2).toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+try {
         const quotationDetailsReport = await db.sequelize.query(`
 SELECT
 	A.cust_no,

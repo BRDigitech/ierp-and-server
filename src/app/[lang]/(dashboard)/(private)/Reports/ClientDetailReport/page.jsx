@@ -1,17 +1,13 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { styled } from '@mui/system'
+import React, { useEffect, useState, useMemo } from 'react'
+import { Grid, styled } from '@mui/system'
 import MuiAlert from '@mui/material/Alert'
-import {dbUrl} from "./../../../../../../utils/string"
+import {dbUrl, getAvatar, ColumnToggleDropdown} from "./../../../../../../utils/string"
 import Menu from '@mui/material/Menu';
-import { styled } from '@mui/system'
-import MuiAlert from '@mui/material/Alert'
-import {dbUrl} from "./../../../../../../utils/string"
+import { TextField, List, ListItem, ListItemText, Box, Paper } from '@mui/material';
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable';
-import { useEffect, useState, useMemo } from 'react'
-import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
@@ -41,10 +37,10 @@ import AddUserDrawer from './../../../../../../views/apps/user/list/AddUserDrawe
 import OptionMenu from '@core/components/option-menu'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
-import CustomAvatar from '@core/components/mui/Avatar'
-import { getInitials } from '@/utils/getInitials'
 import { getLocalizedUrl } from '@/utils/i18n'
 import tableStyles from '@core/styles/table.module.css'
+import { CardActions, CardContent, Divider } from '@mui/material'
+import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 const Icon = styled('i')({})
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
@@ -104,8 +100,26 @@ const UserListTable = ({ tableData }) => {
   const [globalFilter, setGlobalFilter] = useState('')
   const [anchorEl, setAnchorEl] = useState(null);
   const [headerkeys, setHeaderkeys] = useState([])
+  const [user, setUser] = useState()
   const [loadingExport, setLoadingExport] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [query, setQuery] = useState('');
+  const [userData, setUserData] = useState([])
+  const [showDropdown, setShowDropdown] = useState(false);
+  const filteredUsers = userData.filter((user) =>
+    user.name.toLowerCase().startsWith(query.toLowerCase())
+  );
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    setShowDropdown(value !== '');
+  };
+
+  const handleSelect = (name) => {
+    setQuery(name.name);
+    setUser(name)
+    setShowDropdown(false); // hide dropdown
+  };
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -213,6 +227,14 @@ const UserListTable = ({ tableData }) => {
         header: 'Customer Old',
         cell: ({ row }) => <Typography>{row.original.CUST_OLD}</Typography>
       }),
+      columnHelper.accessor('deactive', {
+        header: 'Deactive',
+        cell: ({ row }) => <Typography>{row.original.DEACTIVE}</Typography>
+      }),
+      columnHelper.accessor('entry-by', {
+        header: 'Entry By',
+        cell: ({ row }) => <Typography>{row.original.ENT_BY}</Typography>
+      }),
       // columnHelper.accessor('status', {
       //   header: 'Status',
       //   cell: ({ row }) => (
@@ -294,19 +316,7 @@ const UserListTable = ({ tableData }) => {
     getFacetedMinMaxValues: getFacetedMinMaxValues()
   })
 
-  const getAvatar = params => {
-    const { avatar, fullName } = params
 
-    if (avatar) {
-      return <CustomAvatar src={avatar} size={34} />
-    } else if(fullName) {
-      return <CustomAvatar size={34}>{getInitials(fullName)}</CustomAvatar>
-    } else {
-      return <CustomAvatar size={34}>{getInitials("brd")}</CustomAvatar>
-    }
-  }
-
-  const [userData, setUserData] = useState([])
 const fetchUsers = async() =>{
   try {
     const response = await fetch(
@@ -340,25 +350,26 @@ useEffect(() => {
  }
  handleTreeClick()
 }, [])
-    const handleGenerateReport = async () => {
+ const handleGenerateReport = async () => {
     setLoading(true)
-    if (username) {
+    if (user) {
       try {
         const response = await fetch(
-          `${dbUrl}/CuCustomers?username=${username}`
+          `${dbUrl}/CuCustomers?username=${user.number}`
         )
       
         const result = await response.json()
         if (result.length === 0) {
           console.log('No data found for the given criteria')
         }
+         console.log('result',result)
         setData(result)
-        setShowReport(true)
+        // setShowReport(true)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
     } else {
-      setOpenSnackbar(true)
+      // setOpenSnackbar(true)
     }
     setLoading(false)
   }
@@ -421,9 +432,69 @@ const tableBody = data.map((item) => [
   }
   useEffect(() => {
    }, [rowSelection, file])
+
   return (
     <>
-      <Card>
+        <Card>
+      <CardHeader title='Select Client' />
+     
+        <CardContent>
+          <Grid container spacing={6}>
+            <Box sx={{ width: 300, mx: 'auto', mt: 4, position: 'relative'  }}>
+      <TextField
+        fullWidth
+        label="Search User"
+        variant="outlined"
+        value={query}
+        onChange={handleChange}
+        onFocus={() => {
+          if (query) setShowDropdown(true);
+        }}
+      />
+
+      {showDropdown && (
+        <Paper elevation={3}  sx={{
+          position: 'absolute',
+          top: '100%', // just below the TextField
+          left: 0,
+          right: 0,
+          zIndex: 10,
+          maxHeight: 200,
+          overflowY: 'auto',
+        }}>
+                {filteredUsers.length > 0 ? (
+            <List dense>
+              {filteredUsers.map((user,i) => (
+                <ListItem button key={i} onClick={() => handleSelect(user)}>
+                  <ListItemText primary={user.name} />
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <Box sx={{ p: 2 }}>No users found</Box>
+          )}
+        </Paper>
+      )}
+
+      {query && filteredUsers.length === 0 && (
+        <Paper elevation={1} sx={{ mt: 1, p: 2 }}>
+          No users found
+        </Paper>
+      )}
+    </Box>
+            {/* <Grid size={{ xs: 12, sm: 6 }}>
+              <AppReactDatepicker
+                // selected={formData.date}
+                showYearDropdown
+                showMonthDropdown
+                // onChange={date => setFormData({ ...formData, date })}
+                placeholderText='MM/DD/YYYY'
+                customInput={<CustomTextField fullWidth label='Birth Date' placeholder='MM-DD-YYYY' />}
+              />
+            </Grid> */}
+          </Grid>
+        </CardContent>
+        {/* <Divider /> */}
         <CardHeader title='Filters' className='pbe-4' />
         <TableFilters setData={setFilteredData} tableData={data} />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>

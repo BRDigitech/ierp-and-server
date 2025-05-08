@@ -246,7 +246,7 @@ const TextFieldStyled = styled(TextField)(({ theme }) => ({
 }))
 
 const CustomTextField = forwardRef((props, ref) => {
-  const { size = 'small', slotProps, ...rest } = props
+  const { size = 'medium', slotProps, ...rest } = props
 
   return (
     <TextFieldStyled
