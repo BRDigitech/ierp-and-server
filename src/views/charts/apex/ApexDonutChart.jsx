@@ -21,16 +21,20 @@ const donutColors = {
   series5: '#ffa1a1'
 }
 
-const ApexDonutChart = () => {
+const ApexDonutChart = ({title,clientTypeCounts,clientTypeSeries}) => {
   // Hooks
   const theme = useTheme()
-
+ 
   // Vars
   const textSecondary = 'var(--mui-palette-text-secondary)'
 
   const options = {
     stroke: { width: 0 },
-    labels: ['Operational', 'Networking', 'Hiring', 'R&D'],
+    chart: {
+      type: 'donut',
+      width: '100%', // for Apex layout
+    },
+    labels:Object.keys(clientTypeCounts),
     colors: [donutColors.series1, donutColors.series5, donutColors.series3, donutColors.series2],
     dataLabels: {
       enabled: true,
@@ -60,13 +64,13 @@ const ApexDonutChart = () => {
               color: textSecondary,
               formatter: val => `${parseInt(val, 10)}`
             },
-            total: {
-              show: true,
-              fontSize: '1.2rem',
-              label: 'Operational',
-              formatter: () => '31%',
-              color: 'var(--mui-palette-text-primary)'
-            }
+            // total: {
+            //   show: true,
+            //   fontSize: '1.2rem',
+            //   label: 'Operational',
+            //   formatter: () => '31%',
+            //   color: 'var(--mui-palette-text-primary)'
+            // }
           }
         }
       }
@@ -76,7 +80,8 @@ const ApexDonutChart = () => {
         breakpoint: 992,
         options: {
           chart: {
-            height: 380
+            height: 380,
+             width: '100%'
           },
           legend: {
             position: 'bottom'
@@ -87,7 +92,8 @@ const ApexDonutChart = () => {
         breakpoint: 576,
         options: {
           chart: {
-            height: 320
+            height: 320,
+             width: '100%'
           },
           plotOptions: {
             pie: {
@@ -114,9 +120,11 @@ const ApexDonutChart = () => {
 
   return (
     <Card>
-      <CardHeader title='Expense Ratio' subheader='Spending on various categories' />
+      <CardHeader title={title} 
+      // subheader='Spending on various categories'
+       />
       <CardContent>
-        <AppReactApexCharts type='donut' width='100%' height={400} options={options} series={[85, 16, 50, 50]} />
+        <AppReactApexCharts type='donut' width='100%' height={400} options={options} series={clientTypeSeries} />
       </CardContent>
     </Card>
   )

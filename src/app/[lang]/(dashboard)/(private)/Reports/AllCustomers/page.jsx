@@ -1,6 +1,7 @@
 'use client'
 import React from 'react'
 import Menu from '@mui/material/Menu';
+import CustomerCharts from '../Charts/CustomerCharts';
 import {CardContent,Box,TextField,Grid2} from '@mui/material'
 import { styled } from '@mui/system'
 import {dbUrl, getAvatar, ColumnToggleDropdown} from "./../../../../../../utils/string"
@@ -402,9 +403,16 @@ const UserListTable = ({ tableData }) => {
         setLoading(false)
   }
   const handleExportToExcel = () => {
-     const ws = XLSX.utils.json_to_sheet(data)
+    const selectedRows = table.getSelectedRowModel().rows;
+    const selectedData = selectedRows.map(row => row.original);
+  
+    if (selectedData.length === 0) {
+      alert("No rows selected for export.");
+      return;
+    }
+     const ws = XLSX.utils.json_to_sheet(selectedData)
     const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'All Customers')
+    XLSX.utils.book_append_sheet(wb, ws, 'All-Customers')
     XLSX.writeFile(wb, 'all_customers.xlsx')
   }
   const handleExportToCSV = () => {
@@ -432,17 +440,33 @@ const UserListTable = ({ tableData }) => {
 
 
   const handleExportToPDF = () => {
-   const doc = new jsPDF()
-const tableBody = data.map((item) => [
-  item.CUST_NO,
-  item.NAME,
-  item.CLIENT_TYPE_CODE,
-  item.EMAIL,
-  item.TEL_NO,
-  item.INTRODUCED_BY,
-  item.ACC_OPEN_DATE?.slice(0, 10)]);
+    const selectedRows = table.getSelectedRowModel().rows;
+    const selectedData = selectedRows.map(row => row.original);
+  
+    if (selectedData.length === 0) {
+      alert("No rows selected for export.");
+      return;
+    }
+   const doc = new jsPDF(
+    {
+      orientation: 'landscape', // Set to landscape
+      unit: 'mm',               // Optional: mm, cm, in, px
+      format: 'a4'              // Optional: a4, letter, etc.
+    }
+   )
+   const headers = Object.keys(selectedData[0]);
+   const tableHead = [headers];
+   const tableBody = selectedData.map(item =>
+    headers.map(header => {
+      const value = item[header];
+      return typeof value === 'string' || typeof value === 'number'
+        ? value
+        : value?.toString?.() || '';
+    })
+  );
+
     autoTable(doc,{
-      head:[['Customer#', 'Name', 'Type', 'Email', 'Phone', 'Introduced By', 'Opened at']],
+      head:tableHead,
       body:tableBody,
       styles: {
         fontSize: 8,
@@ -456,15 +480,6 @@ const tableBody = data.map((item) => [
         halign: 'center',
         valign: 'middle',
         overflow: 'visible', // Prevent wrapping
-      },
-      columnStyles: {
-        0: { cellWidth: 15 }, // Customer No
-        1: { cellWidth: 40 }, // Name
-        2: { cellWidth: 10 }, // Type
-        3: { cellWidth: 50 }, // Email
-        4: { cellWidth: 30 }, // Phone
-        5: { cellWidth: 20 }, // Introduced By
-        6: { cellWidth: 35 }, // Opened
       },
     })
     doc.save('all_customers.pdf')
@@ -492,12 +507,17 @@ const tableBody = data.map((item) => [
      }, [columns]);
   return (
     <>
+    
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
         <TableFilters setData={setFilteredData} tableData={data} />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
+        <div className='flex flex-col sm:flex-row max-sm:is-full items-start sm:items-center gap-4'>           
+        
           <CustomTextField
             select
+            fullWidth
+            label='Rows'
             value={table.getState().pagination.pageSize}
             onChange={e => table.setPageSize(Number(e.target.value))}
             className='max-sm:is-full sm:is-[70px]'
@@ -507,6 +527,7 @@ const tableBody = data.map((item) => [
             <MenuItem value='50'>50</MenuItem>
           </CustomTextField>
           <SearchByColumn table={table}/>
+          </div>
           <div className='flex flex-col sm:flex-row max-sm:is-full items-start sm:items-center gap-4'>           
            <Button
         id="basic-button"
@@ -544,9 +565,10 @@ const tableBody = data.map((item) => [
                onClick={() => handleGenerateReport()}
               className='max-sm:is-full'
             >
-           {loading ? "Fetching..." : "Fetch Users"}
+           {loading ? "Fetching..." : "Fetch"}
             </Button>
           </div>
+
         </div>
         <div className='overflow-x-auto'>
           <table className={tableStyles.table}>
@@ -612,7 +634,18 @@ const tableBody = data.map((item) => [
             table.setPageIndex(page)
           }}
         />
+       
       </Card>
+    
+        {table &&
+        <Grid2 item xs={12}>
+        <Card sx={{ width: '100%' }}>
+          <CardContent>
+          <CustomerCharts data={data}/>
+          </CardContent>
+        </Card>
+      </Grid2>   
+  }
       <AddUserDrawer
         open={addUserOpen}
         handleClose={() => setAddUserOpen(!addUserOpen)}

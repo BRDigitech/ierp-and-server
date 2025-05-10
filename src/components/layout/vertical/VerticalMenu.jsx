@@ -11,7 +11,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import { Menu, SubMenu, MenuItem, MenuSection } from '@menu/vertical-menu'
 import CustomChip from '@core/components/mui/Chip'
 
-// import { GenerateVerticalMenu } from '@components/GenerateMenu'
+import { GenerateVerticalMenu } from '@components/GenerateMenu'
 // Hook Imports
 import useVerticalNav from '@menu/hooks/useVerticalNav'
 
@@ -62,8 +62,8 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         renderExpandedMenuItemIcon={{ icon: <i className='tabler-circle text-xs' /> }}
         menuSectionStyles={menuSectionStyles(verticalNavOptions, theme)}
       >
-       <SubMenu label='Client Reports'>
-          <MenuItem href={`/${locale}/Reports/AllCustomers`}>
+       <SubMenu label='Client Reports'  icon={<i className='tabler-table' />}>
+          <MenuItem href={`/${locale}/Reports/AllCustomers`}  icon={<i className='tabler-table' />}>
              All Customers
             </MenuItem>
             {/* <MenuItem href={`/${locale}/Reports/ClientDetailReport`}>

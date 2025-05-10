@@ -12,57 +12,8 @@ import CardContent from '@mui/material/CardContent'
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
-const generateDataHeat = (count, yrange) => {
-  let i = 0
-  const series = []
 
-  while (i < count) {
-    const x = `w${(i + 1).toString()}`
-    const y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min
-
-    series.push({
-      x,
-      y
-    })
-    i += 1
-  }
-
-  return series
-}
-
-// Vars
-const series = [
-  {
-    name: 'SUN',
-    data: generateDataHeat(24, { min: 0, max: 60 })
-  },
-  {
-    name: 'MON',
-    data: generateDataHeat(24, { min: 0, max: 60 })
-  },
-  {
-    name: 'TUE',
-    data: generateDataHeat(24, { min: 0, max: 60 })
-  },
-  {
-    name: 'WED',
-    data: generateDataHeat(24, { min: 0, max: 60 })
-  },
-  {
-    name: 'THU',
-    data: generateDataHeat(24, { min: 0, max: 60 })
-  },
-  {
-    name: 'FRI',
-    data: generateDataHeat(24, { min: 0, max: 60 })
-  },
-  {
-    name: 'SAT',
-    data: generateDataHeat(24, { min: 0, max: 60 })
-  }
-]
-
-const ApexHeatmapChart = () => {
+const ApexHeatmapChart = ({heatmapData, label}) => {
   // Hooks
   const theme = useTheme()
 
@@ -70,9 +21,9 @@ const ApexHeatmapChart = () => {
   const options = {
     chart: {
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: true }
     },
-    dataLabels: { enabled: false },
+    dataLabels: { enabled: true },
     legend: {
       position: 'bottom',
       labels: {
@@ -91,13 +42,11 @@ const ApexHeatmapChart = () => {
         enableShades: false,
         colorScale: {
           ranges: [
-            { to: 10, from: 0, name: '0-10', color: '#b9b3f8' },
-            { to: 20, from: 11, name: '10-20', color: '#aba4f6' },
-            { to: 30, from: 21, name: '20-30', color: '#9d95f5' },
-            { to: 40, from: 31, name: '30-40', color: '#8f85f3' },
-            { to: 50, from: 41, name: '40-50', color: '#8176f2' },
-            { to: 60, from: 51, name: '50-60', color: '#7367f0' }
-          ]
+            { from: 0, to: 0, color: '#e0f7fa', name: 'None Missing' },
+          { from: 1, to: 10, color: '#ffe082', name: 'Few Missing' },
+          { from: 11, to: 100, color: '#ffab91', name: 'Some Missing' },
+          { from: 101, to: 10000, color: '#ff7043', name: 'Many Missing' }
+      ]
         }
       }
     },
@@ -113,17 +62,18 @@ const ApexHeatmapChart = () => {
       }
     },
     xaxis: {
-      labels: { show: false },
-      axisTicks: { show: false },
-      axisBorder: { show: false }
+      labels: { show: true },
+      axisTicks: { show: true },
+      axisBorder: { show: false },
+      categories: ['Missing Count']
     }
   }
 
   return (
     <Card>
-      <CardHeader title='Daily Sales States' />
+      <CardHeader title={label} />
       <CardContent>
-        <AppReactApexCharts type='heatmap' width='100%' height={400} options={options} series={series} />
+        <AppReactApexCharts type='heatmap' width='100%' height={400} options={options} series={heatmapData} />
       </CardContent>
     </Card>
   )

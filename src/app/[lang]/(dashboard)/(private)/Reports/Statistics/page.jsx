@@ -82,7 +82,7 @@ useEffect(() => {
       <Grid item
        xs={12} md={12}
        >
-        <ApexAreaChart />
+        {/* <ApexAreaChart /> */}
       </Grid>
       {/* <Grid item xs={12} md={4}>
         <Square data={statsData.statsSquare} />
@@ -105,7 +105,7 @@ useEffect(() => {
       <Grid item
         xs={12} md={12}
        >
-        <ApexDonutChart />
+        {/* <ApexDonutChart /> */}
       </Grid>
       <Grid item
         xs={12} md={12}
@@ -115,7 +115,7 @@ useEffect(() => {
       <Grid item
         xs={12} md={12}
        >
-        <ApexLineChart />
+        {/* <ApexLineChart /> */}
       </Grid>
       {/* <Grid item xs={12}>
         <LogisticsStatisticsCard data={statsData?.statsHorizontalWithBorder} />
@@ -123,7 +123,7 @@ useEffect(() => {
       <Grid item
         xs={12} md={12}
        >
-        <ApexRadarChart />
+        {/* <ApexRadarChart /> */}
       </Grid>
       {/* <Grid item xs={12}>
         <Horizontal data={statsData.statsHorizontal} />
@@ -134,7 +134,7 @@ useEffect(() => {
       <Grid item
         xs={12} md={12}
        >
-        <ApexRadialBarChart />
+        {/* <ApexRadialBarChart /> */}
       </Grid>
       {/* <Grid item
         xs={12} md={12}

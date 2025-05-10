@@ -9,7 +9,7 @@ import CardContent from '@mui/material/CardContent'
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
-const ApexBarChart = () => {
+const ApexBarChart = ({title, introducers,series}) => {
   // Vars
   const divider = 'var(--mui-palette-divider)'
   const disabledText = 'var(--mui-palette-text-disabled)'
@@ -47,7 +47,7 @@ const ApexBarChart = () => {
     xaxis: {
       axisBorder: { show: false },
       axisTicks: { color: divider },
-      categories: ['MON, 11', 'THU, 14', 'FRI, 15', 'MON, 18', 'WED, 20', 'FRI, 21', 'MON, 23'],
+      categories:  Object.keys(introducers),
       labels: {
         style: { colors: disabledText, fontSize: '13px' }
       }
@@ -57,8 +57,8 @@ const ApexBarChart = () => {
   return (
     <Card>
       <CardHeader
-        title='Data Science'
-        subheader='$74,382.72'
+        title={title}
+        // subheader='$74,382.72'
         sx={{
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
@@ -72,7 +72,7 @@ const ApexBarChart = () => {
           width='100%'
           height={400}
           options={options}
-          series={[{ data: [700, 350, 480, 600, 210, 550, 150] }]}
+          series={series}
         />
       </CardContent>
     </Card>

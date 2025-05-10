@@ -1,6 +1,6 @@
 // Third-party Imports
 import styled from '@emotion/styled'
-
+import VuexyLogo from '@core/svg/Logo'
 // Hook Imports
 import useVerticalNav from '../../hooks/useVerticalNav'
 
@@ -31,6 +31,7 @@ const NavHeader = ({ children }) => {
       collapsedWidth={collapsedWidth}
       transitionDuration={transitionDuration}
     >
+      <VuexyLogo/>
       {children}
     </StyledNavHeader>
   )

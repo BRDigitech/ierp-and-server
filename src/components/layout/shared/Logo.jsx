@@ -59,7 +59,7 @@ const Logo = ({ color }) => {
 
   return (
     <div className='flex items-center'>
-      <VuexyLogo className='text-2xl text-primary' />
+   
       <LogoText
         color={color}
         ref={logoTextRef}
@@ -69,6 +69,7 @@ const Logo = ({ color }) => {
         isBreakpointReached={isBreakpointReached}
       >
         BRD
+         {/* <VuexyLogo className='text-2xl text-primary' /> */}
       </LogoText>
     </div>
   )
